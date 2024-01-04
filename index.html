@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Chat app</title>
+        <style>
+            body {
+                margin: 0;
+                padding-bottom: 3rem;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Roboto, Helvetica, Arial, sans-serif;
+            }
+
+            #form {
+                background: rgba(0, 0, 0, 0.15);
+                padding: 0.25rem;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                height: 3rem;
+                box-sizing: border-box;
+                backdrop-filter: blur(10px);
+            }
+            #input {
+                border: none;
+                padding: 0 1rem;
+                flex-grow: 1;
+                border-radius: 2rem;
+                margin: 0.25rem;
+            }
+            #input:focus {
+                outline: none;
+            }
+            #form > button {
+                background: #333;
+                border: none;
+                padding: 0 1rem;
+                margin: 0.25rem;
+                border-radius: 3px;
+                outline: none;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            #messages {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                /* border: 1px solid black; */
+                display: flex;
+                gap: 5px;
+                margin: 5px 0;
+                flex-direction: column;
+            }
+            #messages > #left {
+                text-align: left;
+                /* border: 1px solid black; */
+            }
+            #messages > #right {
+                text-align: right;
+                /* border: 1px solid black; */
+            }
+             #messages > li {
+                padding: 0.5rem 1rem;
+            } 
+            /* #messages > li:nth-child(odd) {
+                background: #efefef;
+            }  */
+        </style>
+    </head>
+    <body>
+        <h3>Welcome to chat app</h3>
+        <label for="name">Enter your name</label>
+        <input type="text" id="name" placeholder="Name" />
+        <ul id="messages">
+            <!-- <li id="left"><span>jayant</span> <span>How are you</span></li>
+            <li id="right"><span>jayant</span> <span>How are you</span></li> -->
+        </ul>
+        <form id="form" action="">
+            <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+
+            const form = document.getElementById("form");
+            const input = document.getElementById("input");
+            const name = document.getElementById("name");
+
+            // send message
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                socket.emit("message", {
+                    name: name.value,
+                    message: input.value,
+                });
+
+                const messages = document.getElementById("messages");
+                
+                const li = document.createElement("li");
+
+                li.textContent = name.value + " : " + input.value
+                li.setAttribute("id", "right");
+                messages.appendChild(li);
+
+                input.value = "";
+            });
+
+            // receive message
+            socket.on("message", (msg) => {
+                const { name, message } = msg;
+
+                const messages = document.getElementById("messages");
+
+                const li = document.createElement("li");
+
+                li.textContent = name + " : " + message;
+                li.setAttribute("id", "left");
+                messages.appendChild(li);
+            });
+        </script>
+    </body>
+</html>

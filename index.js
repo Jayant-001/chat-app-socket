@@ -26,3 +26,10 @@ io.on("connection", (socket) => {
 server.listen(4000, () => {
     console.log("server running at http://localhost:4000");
 });
+
+/**
+ * 
+ * socket.broadcast.emit() // send to everyone but not me
+ * socket.emit()           // send only to me
+ * io.emit()               // send to every one
+ */
